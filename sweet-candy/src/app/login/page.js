@@ -15,7 +15,7 @@ export default function Login() {
                 type="text" 
                 id="email" 
                 placeholder="Digite seu e-mail"
-                src="/images/email.png"
+                src="/images/senha.png"
                 alt="E-mail: "
                 />
 
