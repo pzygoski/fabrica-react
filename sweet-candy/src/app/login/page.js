@@ -1,11 +1,15 @@
 import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 import styles from './page.module.css';
 import { Formulario, Botao } from '@/components/Form';
 import Link from 'next/link';
+import Head from 'next/head';
 
 export default function Login() {
     return (
         <div>
+            <Header />
+
             <form className={styles.form}>
                 <h1 className={styles.h1}>Fazer login</h1>
                 
@@ -17,20 +21,25 @@ export default function Login() {
                 placeholder="Digite seu e-mail"
                 src="/images/email.png"
                 alt="E-mail: "
+                required 
                 />
 
-                <Formulario 
-                name="senha"
-                text="Senha"
-                type="password"
-                placeholder="Digite sua senha"
-                src="/images/senha.png"
-                alt="Senha: "
-                />
+                <div className={styles.separarInput}>
+                    <Formulario 
+                    name="senha"
+                    text="Senha"
+                    type="password"
+                    placeholder="Digite sua senha"
+                    src="/images/senha.png"
+                    alt="Senha: "
+                    required 
+                    />
+                </div>
 
                 <Botao
                 href="/"
-                text="Entrar" 
+                type="submit"
+                text="Entrar"
                 />
 
 

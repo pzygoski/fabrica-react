@@ -2,12 +2,13 @@
   border: var(--cor4) 2px solid;
   border-radius: 10px;
   width: 75%;
+  max-width: 1100px;
   padding: 10px;
   margin: auto;
   display: block;
   background-color: var(--cor1);
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 37px;
+  margin-bottom: 37px;
 }
 
 .h1{
@@ -26,3 +27,4 @@
 .p{
   font-size: 23px;
 }
+

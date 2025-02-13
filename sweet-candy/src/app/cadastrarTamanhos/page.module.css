@@ -8,7 +8,7 @@
 .form{
     background: linear-gradient(#FBD1FF 0%, #FFA4EB 100%);
     width: 355px;
-    height: auto;
+    height: 610px;
     margin: auto;
     display: block;
     margin-bottom: 30px;
@@ -91,7 +91,7 @@
     font-size: 20px;
     font-family: "Coiny", system-ui;
     color: var(--cor4);
-    padding: 4px 0px 10px 8px
+    padding: 4px 0px 25px 8px
 }
 
 .pDeTamanho{
@@ -110,7 +110,7 @@
 @media (max-width: 393px) {
     .form {
         width: 85%;
-        height: 600px;
+        height: 650px;
     }
 
     .listaTamanhos{
@@ -119,5 +119,12 @@
 
     .pDeTamanho{
         width: 90%;
+    }
+}
+
+@media (max-width: 387px) {
+    .form {
+        width: 85%;
+        height: 670px;
     }
 }

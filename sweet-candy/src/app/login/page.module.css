@@ -17,11 +17,16 @@
     box-shadow: 0 5px 15px var(--cor2);
 }
 
+.separarInput {
+    margin-top: 30px;
+}
+
 .naoPossuiConta{
     display: flex;
     gap: 3px;
     font-family: "Coiny", system-ui;
     font-weight: none;
+    margin-top: 20px;
     margin-left: 23px;
     color: var(--cor4);
 }
@@ -29,10 +34,6 @@
 .link {
     color: #551A8B;
     text-decoration: underline;
-}
-
-.botaoLogin {
-    margin-top: 50px;
 }
 
 @media (max-width: 393px) {

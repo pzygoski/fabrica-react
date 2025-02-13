@@ -1,11 +1,13 @@
 import styles from "./page.module.css"
 import Footer from "@/components/Footer"
+import Header from "@/components/Header"
 import { Formulario, Botao } from "@/components/Form"
 import Link from "next/link"
 
 export default function cadastrarTamanhos() {
     return (
         <div>
+            <Header />
             <form  className={styles.form}>
                 <h1 className={styles.h1}>Cadastrar Tamanhos</h1>
 

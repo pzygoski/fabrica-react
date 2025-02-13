@@ -1,5 +1,6 @@
 import styles from './page.module.css';
 import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 import { Formulario, Botao } from '@/components/Form';
 import Link from 'next/link';
 
@@ -7,6 +8,7 @@ import Link from 'next/link';
 export default function criarConta() {
     return (
         <div>
+            <Header />
             <form className={styles.form}>
                 <h1 className={styles.h1}> Criar conta</h1>
                 <Formulario 
@@ -17,6 +19,7 @@ export default function criarConta() {
                 placeholder="Digite seu e-mail"
                 src="/images/email.png"
                 alt="E-mail: "
+                required 
                 />
 
                 <Formulario 
@@ -27,6 +30,7 @@ export default function criarConta() {
                 placeholder="Digite sua senha"
                 src="/images/senha.png"
                 alt="Senha: "
+                required 
                 />
 
                 <Formulario 
@@ -37,6 +41,7 @@ export default function criarConta() {
                 placeholder="Confirme sua senha"
                 src="/images/senha.png"
                 alt="Confirmação de senha: "
+                required 
                 />
 
                 <Formulario 
@@ -47,10 +52,12 @@ export default function criarConta() {
                 placeholder="Digite seu cpf"
                 src="/images/cpf.png"
                 alt="CPF: "
+                required 
                 /> 
 
                 <Botao
                 href="/"
+                type="submit"
                 text="Entrar" 
                 />
 

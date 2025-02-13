@@ -5,13 +5,7 @@ import HeaderSobreNos from "@/components/HeaderSobreNos";
 import styles from './page.module.css';
 
 export default function SobreNos() {
-    useEffect(() => {
-        document.body.style.background = "linear-gradient(#FBD1FF 0%, #FFA4EB 100%)";
 
-        return () => {
-            document.body.style.background = "";
-        };
-    });
 
     return (
         <div>
