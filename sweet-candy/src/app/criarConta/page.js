@@ -12,6 +12,17 @@ export default function criarConta() {
             <form className={styles.form}>
                 <h1 className={styles.h1}> Criar conta</h1>
                 <Formulario 
+                name="nome" 
+                text="Nome" 
+                type="text" 
+                id="nome" 
+                placeholder="Digite seu nome completo"
+                src="/images/nome.png"
+                alt="Nome: "
+                required 
+                />
+
+                <Formulario 
                 name="email" 
                 text="E-mail" 
                 type="text" 
