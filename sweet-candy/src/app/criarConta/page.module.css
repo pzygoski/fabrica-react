@@ -39,10 +39,9 @@
 }
 
 .erro {
-    color: red;
-    font-weight: bold;
+    color: var(--cor4);
+    font-family: "Coiny", system-ui;
     text-align: center;
-    margin-top: 15px;
 }
 
 @media (max-width: 393px) {

@@ -5,10 +5,12 @@ import Header from '@/components/Header';
 import { Formulario, Botao } from '@/components/Form';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function CriarConta() {
     const [mensagem, setMensagem] = useState('');
-    const [tipoMensagem, setTipoMensagem] = useState(''); // sucesso ou erro
+    const [tipoMensagem, setTipoMensagem] = useState('');
+    const router = useRouter(); // hook para redirecionamento
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -20,8 +22,10 @@ export default function CriarConta() {
         const cpf = event.target.cpf.value;
 
         if (senha !== confirmarSenha) {
-            setMensagem('As senhas não coincidem!');
+            const msg = 'As senhas não coincidem!';
+            setMensagem(msg);
             setTipoMensagem('erro');
+            alert(msg);
             return;
         }
 
@@ -42,16 +46,25 @@ export default function CriarConta() {
             const dados = await resposta.json();
 
             if (resposta.ok) {
-                setMensagem(dados.mensagem || 'Conta criada com sucesso!');
+                const msg = dados.mensagem || 'Conta criada com sucesso!';
+                setMensagem(msg);
                 setTipoMensagem('sucesso');
-                event.target.reset(); // limpa o formulário
+                alert(msg);
+                event.target.reset();
+
+                // Redireciona para a tela de fazer pedido
+                router.push('/fazerPedido');
             } else {
-                setMensagem(dados.mensagem || 'Erro ao criar conta!');
+                const msg = dados.mensagem || 'Erro ao criar conta!';
+                setMensagem(msg);
                 setTipoMensagem('erro');
+                alert(msg);
             }
         } catch (erro) {
-            setMensagem('Erro ao conectar com o servidor!');
+            const msg = 'Erro ao conectar com o servidor!';
+            setMensagem(msg);
             setTipoMensagem('erro');
+            alert(msg);
         }
     }
 
@@ -60,6 +73,7 @@ export default function CriarConta() {
             <Header />
             <form className={styles.form} onSubmit={handleSubmit}>
                 <h1 className={styles.h1}> Criar conta</h1>
+
                 <Formulario 
                     name="nome" 
                     text="Nome" 
@@ -69,7 +83,6 @@ export default function CriarConta() {
                     alt="Nome: "
                     required
                 />
-
                 <Formulario 
                     name="email" 
                     text="E-mail" 
@@ -79,7 +92,6 @@ export default function CriarConta() {
                     alt="E-mail: "
                     required 
                 />
-
                 <Formulario 
                     name="senha" 
                     text="Senha" 
@@ -89,7 +101,6 @@ export default function CriarConta() {
                     alt="Senha: "
                     required 
                 />
-
                 <Formulario 
                     name="confirmarSenha" 
                     text="Confirmar senha" 
@@ -99,17 +110,15 @@ export default function CriarConta() {
                     alt="Confirmação de senha: "
                     required 
                 />
-
                 <Formulario 
                     name="cpf" 
                     text="CPF" 
                     type="text" 
-                    placeholder="Digite seu cpf"
+                    placeholder="Digite seu CPF"
                     src="/images/cpf.png"
                     alt="CPF: "
                     required 
                 /> 
-
                 <Botao
                     type="submit"
                     text="Criar conta" 
@@ -119,14 +128,7 @@ export default function CriarConta() {
                     <p>Já possui uma conta?</p>
                     <Link className={styles.link} href="/login">Faça seu login</Link>
                 </div>
-
-                {mensagem && (
-                    <p className={tipoMensagem === 'sucesso' ? styles.sucesso : styles.erro}>
-                        {mensagem}
-                    </p>
-                )}
             </form>
-
             <Footer />
         </div>
     );
