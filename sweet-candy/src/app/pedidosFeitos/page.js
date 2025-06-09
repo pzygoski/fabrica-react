@@ -49,6 +49,7 @@ export default function pedidosFeitos() {
                         <div className={styles.divDetalhes}>
                             <p><strong>ID:</strong>01</p>
                             <p><strong>Data:</strong>2025/04/01</p>
+                            <p><strong>Nome:</strong>Ana</p>
                             <p><strong>E-mail:</strong> cliente@example.com</p>
                             <p><strong>Valor total:</strong> R$ 100,00</p>
                             <p><strong>Forma de pagamento:</strong> Cartão de Crédito</p>

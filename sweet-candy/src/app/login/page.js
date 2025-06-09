@@ -39,7 +39,7 @@ export default function Login() {
                 localStorage.setItem('clienteId', dados.clienteId);
 
                 // Redireciona para a tela de fazer pedido
-                router.push('/fazerPedido');
+                router.push('/pedido');
             } else {
                 const msg = dados.mensagem || 'Erro ao realizar login!';
                 setMensagem(msg);

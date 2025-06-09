@@ -1,7 +1,7 @@
 import styles from './Form.module.css';
 import Image from 'next/image';
 
-export function Formulario({ name, text, type, placeholder, src, alt, onChange, value }) {
+export function Formulario({ name, text, type, placeholder, src, alt, onChange, value, maxLength }) {
     return (
         <div>
             <label className={styles.label} htmlFor={name}>{text}</label>
@@ -14,11 +14,11 @@ export function Formulario({ name, text, type, placeholder, src, alt, onChange, 
                 placeholder={placeholder}
                 onChange={onChange}
                 value={value}
+                maxLength={maxLength}
             />
         </div>
     );
 }
-
 
 export function Botao({ text, type }) { 
     return (
