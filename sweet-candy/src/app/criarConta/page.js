@@ -52,6 +52,26 @@ export default function CriarConta() {
                 alert(msg);
                 event.target.reset();
 
+                // *** Aqui adiciona a linha para salvar clienteId no localStorage ***
+                // O backend não retorna clienteId, então precisamos fazer login automático ou obter o id após criar.
+                // Como a API não retorna o id ao criar, para simplificar, podemos salvar o email no localStorage
+                // ou fazer login automático depois de criar a conta.
+                // Vou fazer uma chamada fetch para login para obter o id e salvar localStorage
+
+                // Faz login automático após criar a conta para obter o clienteId e salvar localStorage
+                const loginResponse = await fetch('https://apisweetcandy.dev.vilhena.ifro.edu.br/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, senha }),
+                });
+
+                if (loginResponse.ok) {
+                    const loginData = await loginResponse.json();
+                    localStorage.setItem('clienteId', loginData.clienteId);
+                }
+
                 // Redireciona para a tela de fazer pedido
                 router.push('/pedido');
             } else {

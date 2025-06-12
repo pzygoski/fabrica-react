@@ -35,10 +35,15 @@ export default function Login() {
                 setTipoMensagem('sucesso');
                 alert(msg);
 
-                // Você pode armazenar o ID do cliente no localStorage se quiser usar depois
-                localStorage.setItem('clienteId', dados.clienteId);
+                // ✅ Salvar o ID do cliente logado no localStorage
+                if (dados.clienteId) {
+                    localStorage.setItem('clienteId', dados.clienteId.toString());
+                } else {
+                    alert('Erro: clienteId não retornado pela API.');
+                    return;
+                }
 
-                // Redireciona para a tela de fazer pedido
+                // ✅ Redirecionar para a página de pedido
                 router.push('/pedido');
             } else {
                 const msg = dados.mensagem || 'Erro ao realizar login!';
