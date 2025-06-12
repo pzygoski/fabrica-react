@@ -199,7 +199,7 @@
 }
 
 /* Responsivo para telas menores */
-@media (max-width: 768px) {
+@media (max-width: 500px) {
     .buttons {
         flex-direction: column;
         gap: 20px;
@@ -230,3 +230,4 @@
         margin-right: 10px;
     }
 }
+
