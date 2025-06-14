@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Footer from '@/components/Footer';
+import HeaderPedido from '@/components/HeaderPedido';
 import styles from './page.module.css';
 import Link from 'next/link';
 
@@ -140,6 +141,7 @@ export default function Pedido() {
 
   return (
     <div>
+      <HeaderPedido />
 
       <div className={styles.telaFundo}>
         <Image
