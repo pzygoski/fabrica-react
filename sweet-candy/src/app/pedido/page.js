@@ -8,7 +8,7 @@ import styles from './page.module.css';
 
 export default function Pedido() {
   const router = useRouter();
-
+  
   const [clienteId, setClienteId] = useState(null);
   const [quantidade, setQuantidade] = useState(1);
   const [pedido, setPedido] = useState({
@@ -162,20 +162,14 @@ export default function Pedido() {
 
     } else {
       if (
-        !pedido.tamanho &&
-        !pedido.recheio &&
-        !pedido.cobertura &&
-        !pedido.corCobertura
+        !pedido.tamanho && !pedido.recheio && !pedido.cobertura && !pedido.corCobertura
       ) {
         alert("Não há pedidos no carrinho nem seleção atual para finalizar.");
         return;
       }
 
       if (
-        !pedido.tamanho ||
-        !pedido.recheio ||
-        !pedido.cobertura ||
-        !pedido.corCobertura
+        !pedido.tamanho || !pedido.recheio || !pedido.cobertura || !pedido.corCobertura
       ) {
         alert("Por favor, selecione todas as opções para finalizar o pedido.");
         return;
@@ -225,7 +219,6 @@ export default function Pedido() {
   return (
     <div>
       <HeaderPedido />
-
       <div className={styles.telaFundo}>
         <Image
           className={styles.carrinho}
@@ -242,13 +235,22 @@ export default function Pedido() {
             <div className={styles.detalhesCarrinho}>
               <h2 className={styles.h2}>Carrinho</h2>
               <div className={styles.detalhesDoCupcake}>
-                {carrinho.length === 0 && <p>Seu carrinho está vazio.</p>}
+                {carrinho.length === 0 && <p className={styles.carrinhoVazio}>Seu carrinho está vazio.</p>}
                 {carrinho.map(item => (
                   <div key={item.id_pedido_carrinho} className={styles.itemCarrinho}>
                     <p><span className={styles.tituloCarrinho}>ID Pedido:</span> {item.id_pedido_carrinho}</p>
                     <p><span className={styles.tituloCarrinho}>Ingredientes:</span> {item.ingredientes.split(',').join(', ')}</p>
                     <p><span className={styles.tituloCarrinho}>Quantidade:</span> {item.quantidade}</p>
                     <p><span className={styles.tituloCarrinho}>Valor total:</span> R$ {Number(item.valor_total).toFixed(2)}</p>
+                    <button
+                      className={styles.botaoRemover}
+                      onClick={() => {
+                        const novoCarrinho = carrinho.filter(p => p.id_pedido_carrinho !== item.id_pedido_carrinho);
+                        setCarrinho(novoCarrinho);
+                      }}
+                    >
+                      Remover pedido do carrinho
+                    </button>
                   </div>
                 ))}
               </div>
