@@ -16,7 +16,6 @@ export default function PedidosFeitos() {
             const response = await fetch(`https://apisweetcandy.dev.vilhena.ifro.edu.br/admin/pedidos?filtro=${filtro}`);
             const data = await response.json();
 
-            // Agrupar pedidos por cliente
             const agrupados = {};
             data.forEach(pedido => {
                 const chave = pedido.email_cliente;
@@ -86,7 +85,6 @@ export default function PedidosFeitos() {
                         </button>
                     </div>
 
-                    {/* Input com imagem dentro */}
                     <div style={{ position: 'relative', width: '100%' }}>
                         <input
                             type="text"
@@ -94,7 +92,7 @@ export default function PedidosFeitos() {
                             placeholder="Digite o nome do cliente"
                             value={buscaNome}
                             onChange={(e) => setBuscaNome(e.target.value)}
-                            style={{ paddingLeft: '40px' }} // espaço para a imagem
+                            style={{ paddingLeft: '40px' }}
                         />
                         <img
                             className={styles.icon}
@@ -132,8 +130,10 @@ export default function PedidosFeitos() {
                                         <div className={styles.divDetalhes}>
                                             <p><strong>Nome:</strong> {pedido.nome_completo}</p>
                                             <p><strong>Email:</strong> {pedido.email_cliente}</p>
-                                            <p><strong>Valor Total:</strong> R$ {pedido.valor_total}</p>
-                                            <p><strong>Pagamento:</strong> {pedido.forma_pagamento}</p>
+                                            <p><strong>Valor Total:</strong> R$ {parseFloat(pedido.valor_total).toFixed(2)}</p>
+                                            {pedido.forma_pagamento && (
+                                                <p><strong>Pagamento:</strong> {pedido.forma_pagamento}</p>
+                                            )}
                                         </div>
 
                                         {pedido.cupcakes.map((cupcake, index) => (
