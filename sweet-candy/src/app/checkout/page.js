@@ -46,9 +46,9 @@ const Checkout = () => {
 
     if (name === 'cep') {
         novoValor = value
-        .replace(/\D/g, '')         // remove tudo que não for número
-        .slice(0, 8)                // limita a 8 dígitos
-        .replace(/^(\d{5})(\d{0,3})$/, '$1-$2'); // adiciona hífen entre o 5º e 6º dígito
+        .replace(/\D/g, '')
+        .slice(0, 8)
+        .replace(/^(\d{5})(\d{0,3})$/, '$1-$2');
     }
 
     setEndereco((prev) => ({ ...prev, [name]: novoValor }));
@@ -268,12 +268,6 @@ const Checkout = () => {
         <div className={styles.botoes}>
           <button className={styles.button} onClick={handleLimparPedido}>
             <span className={styles.link}>Limpar Pedido</span>
-          </button>
-
-          <button className={styles.button}>
-            <Link className={styles.link} href="/pedido">
-              Voltar
-            </Link>
           </button>
 
           <button className={styles.button} onClick={handleFazerPedido}>
