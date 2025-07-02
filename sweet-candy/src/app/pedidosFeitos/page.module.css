@@ -15,6 +15,13 @@
     margin-top: 30px;
     border-radius: 15px;
     box-shadow: 0 5px 15px var(--cor2);
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+}
+
+/* Chrome, Safari, Edge */
+.form::-webkit-scrollbar {
+    display: none;
 }
 
 .detalhePedido {

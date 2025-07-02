@@ -123,7 +123,7 @@ export default function PedidosFeitos() {
                             >
                                 {mostrarDetalhes === pedido.email_cliente ? 'Ocultar detalhes' : 'Mostrar detalhes'}
                             </button>
-
+                            
                             {mostrarDetalhes === pedido.email_cliente && (
                                 <div id="overlay" className={styles.overlay} onClick={fecharDetalhes}>
                                     <div className={styles.detalhesExtras} onClick={(e) => e.stopPropagation()}>
