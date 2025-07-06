@@ -1,13 +1,15 @@
-'use client'
+'use client';
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
-import Link from 'next/link';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 
 const Checkout = () => {
+  const router = useRouter();
   const [pagamento, setPagamento] = useState('');
   const [resumo, setResumo] = useState(null);
+  const [carregandoCep, setCarregandoCep] = useState(false);
 
   const [endereco, setEndereco] = useState({
     rua: '',
@@ -17,165 +19,161 @@ const Checkout = () => {
     complemento: '',
   });
 
-  async function fetchResumo(clienteId) {
+  const fetchCepData = async (cepNumerico) => {
     try {
-      const response = await fetch(
-        `https://apisweetcandy.dev.vilhena.ifro.edu.br/resumo/${clienteId}`
-      );
+      setCarregandoCep(true);
+      const response = await fetch(`https://viacep.com.br/ws/${cepNumerico}/json/`);
       const data = await response.json();
-
-      if (response.ok) {
-        setResumo(data);
-      } else {
-        console.error('Erro ao obter resumo:', data.erro);
-        setResumo(null);
+      if (data.erro) {
+        alert('CEP não encontrado. Verifique os dados e tente novamente.');
+        return;
       }
-    } catch (error) {
-      console.error('Erro ao conectar com a API de resumo:', error);
+      setEndereco((prev) => ({
+        ...prev,
+        rua: data.logradouro || '',
+        bairro: data.bairro || '',
+      }));
+    } catch {
+      alert('Não foi possível buscar o CEP. Tente novamente mais tarde.');
+    } finally {
+      setCarregandoCep(false);
+    }
+  };
+
+  const fetchResumo = async (clienteId) => {
+    try {
+      const res = await fetch(`https://apisweetcandy.dev.vilhena.ifro.edu.br/resumo/${clienteId}`);
+      const data = await res.json();
+      if (res.ok) setResumo(data);
+      else setResumo(null);
+    } catch {
       setResumo(null);
     }
-  }
+  };
 
-    const handleEnderecoChange = (e) => {
+  const handleEnderecoChange = (e) => {
     const { name, value } = e.target;
     let novoValor = value;
 
-    if (name === 'numero') {
-        novoValor = value.replace(/\D/g, '');
-    }
-
+    if (name === 'numero') novoValor = value.replace(/\D/g, '');
     if (name === 'cep') {
-        novoValor = value
-        .replace(/\D/g, '')
-        .slice(0, 8)
-        .replace(/^(\d{5})(\d{0,3})$/, '$1-$2');
+      novoValor = value.replace(/\D/g, '').slice(0, 8).replace(/^(\d{5})(\d{0,3})$/, '$1-$2');
+      const cepNums = novoValor.replace(/\D/g, '');
+      if (cepNums.length === 8) fetchCepData(cepNums);
     }
 
     setEndereco((prev) => ({ ...prev, [name]: novoValor }));
-    };
+  };
 
   const handleLimparPedido = async () => {
     const clienteId = localStorage.getItem('clienteId');
-    if (!clienteId) {
-      alert('ID do cliente não encontrado. Faça login novamente.');
-      return;
-    }
+    if (!clienteId) return alert('Não foi possível identificar o cliente. Faça login novamente.');
 
     try {
-      const response = await fetch(
+      const res = await fetch(
         `https://apisweetcandy.dev.vilhena.ifro.edu.br/pedidos/aguardando/${clienteId}`,
         { method: 'DELETE' }
       );
-      const data = await response.json();
-
-      if (response.ok) {
-        alert(data.mensagem || 'Pedido limpo com sucesso!');
-        await fetchResumo(clienteId);
+      const data = await res.json();
+      if (res.ok) {
+        alert('Pedidos cancelados!');
+        router.push('/pedido');
       } else {
-        alert('Erro ao limpar pedido: ' + (data.erro || 'Erro desconhecido'));
+        alert(data.erro || 'Ocorreu um erro ao tentar cancelar os pedidos.');
       }
-    } catch (error) {
-      alert('Erro ao conectar com a API: ' + error.message);
+    } catch {
+      alert('Erro ao conectar com a API. Por favor, tente novamente mais tarde.');
     }
   };
 
   const handleFazerPedido = async () => {
-    if (!resumo || resumo.quantidade === 0) {
-      alert('Você precisa montar pelo menos 1 cupcake antes de finalizar o pedido.');
-      return;
-    }
+    if (!resumo || resumo.quantidade === 0)
+      return alert('Adicione pelo menos um cupcake antes de prosseguir com o pedido.');
 
-    if (!pagamento) {
-      alert('Selecione uma forma de pagamento antes de finalizar o pedido.');
-      return;
-    }
+    if (!pagamento)
+      return alert('Selecione uma forma de pagamento antes de finalizar o pedido.');
 
     const { rua, numero, cep, bairro } = endereco;
-    if (!rua || !numero || !cep || !bairro) {
-      alert('Preencha todos os campos obrigatórios do endereço.');
-      return;
-    }
+    if (!rua || !numero || !cep || !bairro)
+      return alert('Preencha todos os campos obrigatórios do endereço antes de continuar.');
 
     const clienteId = localStorage.getItem('clienteId');
-    if (!clienteId) {
-      alert('ID do cliente não encontrado. Faça login novamente.');
-      return;
-    }
+    if (!clienteId)
+      return alert('Não foi possível identificar o cliente. Faça login novamente.');
 
     try {
-      const response = await fetch(
-        'https://apisweetcandy.dev.vilhena.ifro.edu.br/endereco',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id_cliente: clienteId,
-            ...endereco,
-          }),
-        }
-      );
+      const resEndereco = await fetch('https://apisweetcandy.dev.vilhena.ifro.edu.br/endereco', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_cliente: clienteId, ...endereco }),
+      });
+      const dataEndereco = await resEndereco.json();
+      if (!resEndereco.ok)
+        return alert(dataEndereco.erro || 'Erro ao salvar o endereço. Verifique os dados e tente novamente.');
+    } catch {
+      return alert('Erro ao conectar-se à API de endereço. Por favor, tente novamente mais tarde.');
+    }
+
+    const formaPagamentoConvertida = pagamento === 'maquina' ? 'cartao' : pagamento;
+
+    const payload = {
+      id_cliente: parseInt(clienteId),
+      forma_pagamento: formaPagamentoConvertida,
+      quantidade: Number(resumo.quantidade),
+      valor_total: Number(resumo.total),
+      taxaServico: Number(resumo.taxaServico),
+      taxaEntrega: Number(resumo.taxaEntrega),
+    };
+
+    try {
+      const response = await fetch('https://apisweetcandy.dev.vilhena.ifro.edu.br/resumo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.erro || 'Erro ao salvar endereço.');
-        return;
+        return alert(data.erro || 'Erro ao finalizar o pedido.');
       }
-    } catch (error) {
-      alert('Erro ao conectar com a API de endereço: ' + error.message);
-      return;
-    }
 
-    window.location.href = '/vendaCupcake';
+      alert('Pedido feito com sucesso!');
+      router.push('/feedback');
+
+      setPagamento('');
+      setEndereco({ rua: '', numero: '', cep: '', bairro: '', complemento: '' });
+      await fetchResumo(clienteId);
+    } catch {
+      alert('Erro ao conectar com a API de pedido. Tente novamente.');
+    }
   };
 
   useEffect(() => {
     const clienteId = localStorage.getItem('clienteId');
-    if (!clienteId) {
-      alert('ID do cliente não encontrado. Faça login novamente.');
-      return;
-    }
-    fetchResumo(clienteId);
+    if (clienteId) fetchResumo(clienteId);
+    else alert('Cliente não identificado. Realize o login novamente para continuar.');
   }, []);
 
   return (
     <div>
       <Header />
-
       <div className={styles.container}>
         <h1 className={styles.h1}>Checkout</h1>
 
         <h2 className={styles.h2}>Formas de Pagamento</h2>
         <div className={styles.pagamentos}>
-          <label className={styles.label}>
-            <input
-              className={styles.input}
-              type="radio"
-              name="pagamento"
-              checked={pagamento === 'pix'}
-              onChange={() => setPagamento('pix')}
-            />
-            Pix
-          </label>
-          <label className={styles.label}>
-            <input
-              className={styles.input}
-              type="radio"
-              name="pagamento"
-              checked={pagamento === 'maquina'}
-              onChange={() => setPagamento('maquina')}
-            />
-            Máquina móvel
-          </label>
-          <label className={styles.label}>
-            <input
-              className={styles.input}
-              type="radio"
-              name="pagamento"
-              checked={pagamento === 'dinheiro'}
-              onChange={() => setPagamento('dinheiro')}
-            />
-            Dinheiro
-          </label>
+          {['pix', 'maquina', 'dinheiro'].map((tipo) => (
+            <label key={tipo} className={styles.label}>
+              <input
+                type="radio"
+                name="pagamento"
+                className={styles.input}
+                checked={pagamento === tipo}
+                onChange={() => setPagamento(tipo)}
+              />
+              {tipo === 'pix' ? 'Pix' : tipo === 'maquina' ? 'Máquina móvel' : 'Dinheiro'}
+            </label>
+          ))}
         </div>
 
         <h3 className={styles.h3}>Endereço de entrega</h3>
@@ -183,58 +181,59 @@ const Checkout = () => {
           <p className={`${styles.p} ${styles.fullRow}`}>
             <span className={styles.fixo}>Rua:</span>
             <input
-              type="text"
+              readOnly
               name="rua"
               value={endereco.rua}
               onChange={handleEnderecoChange}
               className={styles.inputTexto}
+              placeholder="Rua"
             />
           </p>
 
           <p className={styles.p}>
             <span className={styles.fixo}>Número:</span>
             <input
-              type="text"
-              inputMode="numeric"
               name="numero"
+              inputMode="numeric"
               value={endereco.numero}
               onChange={handleEnderecoChange}
               className={styles.inputTexto}
+              placeholder="Número"
             />
           </p>
 
           <p className={styles.p}>
             <span className={styles.fixo}>CEP:</span>
             <input
-              type="text"
-              inputMode="text"
               name="cep"
               value={endereco.cep}
-              maxLength={9}
               onChange={handleEnderecoChange}
               className={styles.inputTexto}
+              placeholder="CEP (ex: 12345-678)"
             />
+            {carregandoCep && <span className={styles.loading}>Buscando CEP…</span>}
           </p>
 
           <p className={styles.p}>
             <span className={styles.fixo}>Bairro:</span>
             <input
-              type="text"
+              readOnly
               name="bairro"
               value={endereco.bairro}
               onChange={handleEnderecoChange}
               className={styles.inputTexto}
+              placeholder="Bairro"
             />
           </p>
 
           <p className={styles.p}>
             <span className={styles.fixo}>Complemento:</span>
             <input
-              type="text"
               name="complemento"
               value={endereco.complemento}
               onChange={handleEnderecoChange}
               className={styles.inputTexto}
+              placeholder="Complemento (opcional)"
             />
           </p>
         </div>
@@ -243,39 +242,31 @@ const Checkout = () => {
         <div className={styles.blocoresumo}>
           <p className={styles.p}>
             <span className={styles.fixo}>Quantidade:</span>{' '}
-            <span>{resumo ? resumo.quantidade : 'Carregando...'}</span>
+            <span>{resumo ? resumo.quantidade : 'Carregando…'}</span>
           </p>
           <p className={styles.p}>
             <span className={styles.fixo}>Taxa de serviço:</span>{' '}
-            <span>
-              R$ {resumo ? resumo.taxaServico.toFixed(2) : 'Carregando...'}
-            </span>
+            <span>{resumo ? `R$ ${resumo.taxaServico.toFixed(2)}` : 'Carregando…'}</span>
           </p>
           <p className={styles.p}>
             <span className={styles.fixo}>Taxa de entrega:</span>{' '}
-            <span>
-              R$ {resumo ? resumo.taxaEntrega.toFixed(2) : 'Carregando...'}
-            </span>
+            <span>{resumo ? `R$ ${resumo.taxaEntrega.toFixed(2)}` : 'Carregando…'}</span>
           </p>
           <p className={styles.p}>
             <span className={styles.fixo}>Total:</span>{' '}
-            <span>
-              R$ {resumo ? resumo.total.toFixed(2) : 'Carregando...'}
-            </span>
+            <span>{resumo ? `R$ ${resumo.total.toFixed(2)}` : 'Carregando…'}</span>
           </p>
         </div>
 
         <div className={styles.botoes}>
-          <button className={styles.button} onClick={handleLimparPedido}>
-            <span className={styles.link}>Limpar Pedido</span>
+          <button type="button" className={styles.button} onClick={handleLimparPedido}>
+            Limpar pedido
           </button>
-
-          <button className={styles.button} onClick={handleFazerPedido}>
-            <span className={styles.link}>Fazer pedido</span>
+          <button type="button" className={styles.button} onClick={handleFazerPedido}>
+            Fazer pedido
           </button>
         </div>
       </div>
-
       <Footer />
     </div>
   );

@@ -16,23 +16,25 @@ export default function PedidosFeitos() {
             const response = await fetch(`https://apisweetcandy.dev.vilhena.ifro.edu.br/admin/pedidos?filtro=${filtro}`);
             const data = await response.json();
 
-            const agrupados = {};
+            const agrupadosPorCliente = {};
             data.forEach(pedido => {
                 const chave = pedido.email_cliente;
 
-                if (!agrupados[chave]) {
-                    agrupados[chave] = {
+                if (!agrupadosPorCliente[chave]) {
+                    agrupadosPorCliente[chave] = {
                         ...pedido,
-                        cupcakes: [...pedido.cupcakes],
-                        ids: [pedido.id_pedido]
+                        cupcakes: [...pedido.cupcakes], 
+                        ids: [pedido.id_pedido], 
+                        valor_total: parseFloat(pedido.valor_total || 0)
                     };
                 } else {
-                    agrupados[chave].cupcakes.push(...pedido.cupcakes);
-                    agrupados[chave].ids.push(pedido.id_pedido);
+                    agrupadosPorCliente[chave].cupcakes.push(...pedido.cupcakes);
+                    agrupadosPorCliente[chave].ids.push(pedido.id_pedido);
+                    agrupadosPorCliente[chave].valor_total += parseFloat(pedido.valor_total || 0); 
                 }
             });
-
-            setPedidos(Object.values(agrupados));
+            
+            setPedidos(Object.values(agrupadosPorCliente));
         } catch (error) {
             console.error('Erro ao buscar pedidos:', error);
         }
@@ -136,22 +138,29 @@ export default function PedidosFeitos() {
                                             )}
                                         </div>
 
-                                        {pedido.cupcakes.map((cupcake, index) => (
-                                            <div key={index} className={styles.divDetalhes}>
-                                                <p><strong>Tamanho:</strong> {cupcake.tamanho}</p>
-                                                <p><strong>Recheio:</strong> {cupcake.recheio}</p>
-                                                <p><strong>Cobertura:</strong> {cupcake.cobertura}</p>
-                                                <p><strong>Cor da cobertura:</strong> {cupcake.cor_cobertura}</p>
-                                                <p><strong>Quantidade:</strong> {cupcake.quantidade}</p>
+                                        {/* Renderização dos Cupcakes */}
+                                        {pedido.cupcakes && pedido.cupcakes.length > 0 ? (
+                                            pedido.cupcakes.map((cupcake, index) => (
+                                                <div key={index} className={styles.divDetalhes}>
+                                                    <p><strong>Tamanho:</strong> {cupcake.tamanho || 'Não especificado'}</p>
+                                                    <p><strong>Recheio:</strong> {cupcake.recheio || 'Não especificado'}</p>
+                                                    <p><strong>Cobertura:</strong> {cupcake.cobertura || 'Não especificado'}</p>
+                                                    <p><strong>Cor da cobertura:</strong> {cupcake.cor_cobertura || 'Não especificado'}</p>
+                                                    <p><strong>Quantidade:</strong> {cupcake.quantidade || 1}</p> {/* Garante que a quantidade seja exibida, padrão 1 */}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className={styles.divDetalhes}>
+                                                <p>Nenhum cupcake detalhado para este pedido.</p>
                                             </div>
-                                        ))}
+                                        )}
 
                                         <div className={styles.divDetalhes}>
-                                            <p><strong>Rua:</strong> {pedido.rua}</p>
-                                            <p><strong>Número:</strong> {pedido.numero}</p>
-                                            <p><strong>Bairro:</strong> {pedido.bairro}</p>
-                                            <p><strong>CEP:</strong> {pedido.cep}</p>
-                                            <p><strong>Complemento:</strong> {pedido.complemento}</p>
+                                            <p><strong>Rua:</strong> {pedido.rua || 'Não informado'}</p>
+                                            <p><strong>Número:</strong> {pedido.numero || 'Não informado'}</p>
+                                            <p><strong>Bairro:</strong> {pedido.bairro || 'Não informado'}</p>
+                                            <p><strong>CEP:</strong> {pedido.cep || 'Não informado'}</p>
+                                            <p><strong>Complemento:</strong> {pedido.complemento || 'Não informado'}</p>
                                         </div>
 
                                         <div className={styles.divDetalhes}>
