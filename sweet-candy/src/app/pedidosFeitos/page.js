@@ -9,7 +9,21 @@ export default function PedidosFeitos() {
     const [pedidos, setPedidos] = useState([]);
     const [mostrarDetalhes, setMostrarDetalhes] = useState(null);
     const [filtro, setFiltro] = useState('aguardando');
-    const [buscaNome, setBuscaNome] =  useState('');
+    const [buscaNome, setBuscaNome] = useState('');
+
+    // 🔧 Função para corrigir horário (UTC-4 / Rondônia)
+    function ajustarParaRondonia(dataString) {
+        const dataOriginal = new Date(dataString);
+        dataOriginal.setHours(dataOriginal.getHours() - 4);
+        return dataOriginal.toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+        });
+    }
 
     const fetchPedidos = async () => {
         try {
@@ -23,17 +37,17 @@ export default function PedidosFeitos() {
                 if (!agrupadosPorCliente[chave]) {
                     agrupadosPorCliente[chave] = {
                         ...pedido,
-                        cupcakes: [...pedido.cupcakes], 
-                        ids: [pedido.id_pedido], 
+                        cupcakes: [...pedido.cupcakes],
+                        ids: [pedido.id_pedido],
                         valor_total: parseFloat(pedido.valor_total || 0)
                     };
                 } else {
                     agrupadosPorCliente[chave].cupcakes.push(...pedido.cupcakes);
                     agrupadosPorCliente[chave].ids.push(pedido.id_pedido);
-                    agrupadosPorCliente[chave].valor_total += parseFloat(pedido.valor_total || 0); 
+                    agrupadosPorCliente[chave].valor_total += parseFloat(pedido.valor_total || 0);
                 }
             });
-            
+
             setPedidos(Object.values(agrupadosPorCliente));
         } catch (error) {
             console.error('Erro ao buscar pedidos:', error);
@@ -46,16 +60,24 @@ export default function PedidosFeitos() {
 
     const mudarStatus = async (ids) => {
         try {
-            await Promise.all(ids.map(async (id) => {
-                await fetch(`https://apisweetcandy.dev.vilhena.ifro.edu.br/admin/pedidos/${id}`, {
+            const resultados = await Promise.all(ids.map(async (id) => {
+                const resposta = await fetch(`https://apisweetcandy.dev.vilhena.ifro.edu.br/admin/pedidos/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status: 'finalizado' })
                 });
+
+                const dados = await resposta.json();
+                console.log(`Pedido ${id} →`, dados);
+                return resposta.ok;
             }));
 
-            await fetchPedidos();
-            setMostrarDetalhes(null);
+            if (resultados.every(ok => ok)) {
+                await fetchPedidos();
+                setMostrarDetalhes(null);
+            } else {
+                alert("Alguns pedidos não foram atualizados. Veja o console.");
+            }
         } catch (error) {
             console.error('Erro ao atualizar status:', error);
         }
@@ -115,7 +137,7 @@ export default function PedidosFeitos() {
                         <div key={pedido.email_cliente} className={styles.detalhePedido}>
                             <div className={styles.idData}>
                                 <p className={styles.id}>Cliente: {pedido.nome_completo}</p>
-                                <p className={styles.data}>Data: {pedido.data_criacao}</p>
+                                <p className={styles.data}>Data: {ajustarParaRondonia(pedido.data_criacao)}</p>
                             </div>
 
                             <button
@@ -125,7 +147,7 @@ export default function PedidosFeitos() {
                             >
                                 {mostrarDetalhes === pedido.email_cliente ? 'Ocultar detalhes' : 'Mostrar detalhes'}
                             </button>
-                            
+
                             {mostrarDetalhes === pedido.email_cliente && (
                                 <div id="overlay" className={styles.overlay} onClick={fecharDetalhes}>
                                     <div className={styles.detalhesExtras} onClick={(e) => e.stopPropagation()}>
@@ -138,7 +160,6 @@ export default function PedidosFeitos() {
                                             )}
                                         </div>
 
-                                        {/* Renderização dos Cupcakes */}
                                         {pedido.cupcakes && pedido.cupcakes.length > 0 ? (
                                             pedido.cupcakes.map((cupcake, index) => (
                                                 <div key={index} className={styles.divDetalhes}>
@@ -146,7 +167,7 @@ export default function PedidosFeitos() {
                                                     <p><strong>Recheio:</strong> {cupcake.recheio || 'Não especificado'}</p>
                                                     <p><strong>Cobertura:</strong> {cupcake.cobertura || 'Não especificado'}</p>
                                                     <p><strong>Cor da cobertura:</strong> {cupcake.cor_cobertura || 'Não especificado'}</p>
-                                                    <p><strong>Quantidade:</strong> {cupcake.quantidade || 1}</p> {/* Garante que a quantidade seja exibida, padrão 1 */}
+                                                    <p><strong>Quantidade:</strong> {cupcake.quantidade || 1}</p>
                                                 </div>
                                             ))
                                         ) : (
