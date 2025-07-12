@@ -29,16 +29,19 @@
     width: 90%;
     border-radius: 5px;
     margin: auto;
-    height: 70px;
-    display: flex;
-    gap: 80px;
+    padding: 10px 15px;
     margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .idData {
-    display: block;
-    margin-top: auto;
-    margin-bottom: auto;
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: break-word;
 }
 
 .id, .data {
@@ -59,19 +62,22 @@
 }
 
 .button {
-    height: 30px;
-    margin-top: auto;
-    margin-bottom: auto;
-    margin-left: 70px;
-    padding-left: 5px;
-    padding-right: 5px;
-    border-radius: 7px;
+    height: 35px;
+    padding: 0 12px;
     font-family: "Coiny", system-ui;
     color: var(--cor4);
     background-color: #fc7de0;
     border: none;
+    border-radius: 7px;
     cursor: pointer;
-    color: var(--cor4);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.button:hover {
+    transform: scale(1.03);
+    box-shadow: 0 1px 15px #ff78e2;
+    color: var(--cor3);
 }
 
 .buttonCima {
@@ -90,6 +96,12 @@
     color: var(--cor4);
 }
 
+.buttonCima:hover {
+    transform: scale(1.03);
+    box-shadow: 0 1px 15px #ff78e2;
+    color: var(--cor3);
+}
+
 .buttonMarcarConcluido {
     height: 30px;
     border-radius: 7px;
@@ -102,6 +114,12 @@
     display: block;
     margin: auto;
     padding: 5px;
+}
+
+.buttonMarcarConcluido:hover {
+    transform: scale(1.03);
+    box-shadow: 0 1px 15px #ff78e2;
+    color: var(--cor3);
 }
 
 .divDetalhes {

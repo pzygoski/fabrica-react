@@ -9,7 +9,7 @@ export default function PedidosFeitos() {
     const [pedidos, setPedidos] = useState([]);
     const [mostrarDetalhes, setMostrarDetalhes] = useState(null);
     const [filtro, setFiltro] = useState('aguardando');
-    const [buscaNome, setBuscaNome] = useState('');
+    const [buscaNome, setBuscaNome] =  useState('');
 
     const fetchPedidos = async () => {
         try {

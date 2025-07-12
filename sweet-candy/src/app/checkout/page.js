@@ -77,6 +77,7 @@ const Checkout = () => {
       const data = await res.json();
       if (res.ok) {
         alert('Pedidos cancelados!');
+        setResumo(null);
         router.push('/pedido');
       } else {
         alert(data.erro || 'Ocorreu um erro ao tentar cancelar os pedidos.');
@@ -138,11 +139,18 @@ const Checkout = () => {
       }
 
       alert('Pedido feito com sucesso!');
-      router.push('/feedback');
 
       setPagamento('');
       setEndereco({ rua: '', numero: '', cep: '', bairro: '', complemento: '' });
-      await fetchResumo(clienteId);
+      setResumo({
+        quantidade: 0,
+        subtotal: 0,
+        taxaServico: resumo.taxaServico,
+        taxaEntrega: resumo.taxaEntrega,
+        total: resumo.taxaServico + resumo.taxaEntrega,
+      });
+
+      router.push('/vendaCupcake');
     } catch {
       alert('Erro ao conectar com a API de pedido. Tente novamente.');
     }
